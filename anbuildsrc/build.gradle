@@ -1,0 +1,24 @@
+apply plugin: 'java'
+apply plugin: 'groovy'
+tasks.withType(JavaCompile) { options.encoding = "UTF-8" }
+dependencies {
+    implementation gradleApi()
+    implementation localGroovy()
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.tools.build:gradle:3.6.2'
+    implementation 'com.google.code.gson:gson:2.8.5'
+
+}
+repositories {
+    jcenter()
+}
+//uploadArchives {
+//    repositories.mavenDeployer {
+//        repository(url: uri('../repo'))
+//        pom.groupId = 'com.lis.anbuildsrc'//包名
+//        pom.artifactId = 'patchplugin'//在需要引用插件时用到
+//        pom.version = '1.0.0'
+//    }
+//}
+sourceCompatibility = "7"
+targetCompatibility = "7"
