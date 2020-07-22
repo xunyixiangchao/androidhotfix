@@ -11,6 +11,7 @@ import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskOutputs;
 
 import java.io.File;
@@ -57,6 +58,12 @@ public class PatchPlugin implements Plugin<Project> {
                         if (applicationVariant.getName().contains("debug") && !debugOn) {
                             return;
                         }
+                        // Map<Project, Set<Task>> allTasks = project.getAllTasks(true);
+                        // Set<Task> tasks = allTasks.get(project);
+                        // for (Task task : tasks) {
+                        //     project.getLogger().error(task.getName());
+                        // }
+
                         //配置热修复插件生成补丁的一系列任务
                         configTasks(project, applicationVariant, patchExtension);
                     }
@@ -70,7 +77,7 @@ public class PatchPlugin implements Plugin<Project> {
         String variantName = variant.getName();
         //首字母大写
         String capitalizeName = Utils.capitalize(variantName);
-//热修复的输出目录
+        //热修复的输出目录
         File outputDir;
         //如果没有指名输出目录，默认输出到build/patch/debug(release)下
         if (!Utils.isEmpty(patchExtension.output)) {
@@ -127,8 +134,8 @@ public class PatchPlugin implements Plugin<Project> {
         final File patchFile = new File(outputDir, "patch.jar");
 
         //打包dex任务
-        final Task dexTask = project.getTasks().findByName("transformClassesWithDexBuilderFor" + capitalizeName);
-
+        // final Task dexTask = project.getTasks().findByName("transformClassesWithDexBuilderFor" + capitalizeName);
+        final Task dexTask = project.getTasks().findByName("dexBuilder" + capitalizeName);
         //dofirst:在任务之前干一些事件
         dexTask.doFirst(new Action<Task>() {
             @Override
@@ -218,8 +225,9 @@ public class PatchPlugin implements Plugin<Project> {
                 InputStream is = jarFile.getInputStream(jarEntry);
 
                 String className = jarEntry.getName();
+                // System.out.println("className："+className);
                 if (className.endsWith(".class") && !className.startsWith(applicationName)
-                        && !Utils.isAndroidClass(className) && !className.startsWith("com/enjoy" +
+                        && !Utils.isAndroidClass(className) && !className.startsWith("com/lis" +
                         "/patch")) {
                     byte[] byteCode = ClassUtils.referHackWhenInit(is);
                     String hex = Utils.hex(byteCode);

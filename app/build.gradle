@@ -1,9 +1,9 @@
 apply plugin: 'com.android.application'
-//apply plugin: 'com.lis.anbuildsrc.patchplugin'
-//apply plugin: 'com.lis.anbuildsrc.patchplugin'
-//patch {
-//    debugOn true
-//}
+apply plugin: 'com.lis.patchplugin'
+path{
+    debugOn true
+    applicationName 'com.lis.androidhotfix.MyApplication'
+}
 android {
     compileSdkVersion 28
     buildToolsVersion "29.0.3"
