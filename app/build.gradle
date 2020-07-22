@@ -1,5 +1,9 @@
 apply plugin: 'com.android.application'
-//apply plugin: 'com.lis.anbuildsrc.PatchPlugin'
+//apply plugin: 'com.lis.anbuildsrc.patchplugin'
+//apply plugin: 'com.lis.anbuildsrc.patchplugin'
+//patch {
+//    debugOn true
+//}
 android {
     compileSdkVersion 28
     buildToolsVersion "29.0.3"
