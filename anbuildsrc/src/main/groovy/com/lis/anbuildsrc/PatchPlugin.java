@@ -11,7 +11,6 @@ import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
-import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskOutputs;
 
 import java.io.File;
@@ -31,6 +30,7 @@ import java.util.regex.Matcher;
  * Created by lis on 2020/7/22.
  */
 public class PatchPlugin implements Plugin<Project> {
+
     @Override
     public void apply(Project project) {
         if (!project.getPlugins().hasPlugin(AppPlugin.class)) {
@@ -85,7 +85,7 @@ public class PatchPlugin implements Plugin<Project> {
         } else {
             outputDir = new File(project.getBuildDir(), "patch/" + variantName);
         }
-        outputDir.mkdir();
+        outputDir.mkdirs();
         //获得android的混淆任务
         final Task proguardTask = project.getTasks().findByName("transformClassesAndResourcesWithProguardFor" + capitalizeName);
 
@@ -132,9 +132,9 @@ public class PatchPlugin implements Plugin<Project> {
         final File patchClassFile = new File(outputDir, "patchClass.jar");
         //用dx打包后的jar包
         final File patchFile = new File(outputDir, "patch.jar");
-
-        //打包dex任务
+        //打包dex任务 gradle3.1.3可以通过这个生成
         // final Task dexTask = project.getTasks().findByName("transformClassesWithDexBuilderFor" + capitalizeName);
+        //gradle3.6.2通过dexBuilder生成
         final Task dexTask = project.getTasks().findByName("dexBuilder" + capitalizeName);
         //dofirst:在任务之前干一些事件
         dexTask.doFirst(new Action<Task>() {
@@ -156,8 +156,14 @@ public class PatchPlugin implements Plugin<Project> {
                     String filePath = file.getAbsolutePath();
                     if (filePath.endsWith(".jar")) {
                         processJar(applicationName, file, newHexs, patchGenerator);
-                    } else if (filePath.endsWith(".class")) {
-                        processClass(applicationName, variant.getDirName(), file, newHexs, patchGenerator);
+                        //3.6.2 file有可能是文件夹
+                    } else if (filePath.endsWith(".class") || file.isDirectory()) {
+                        if (file.isDirectory()) {
+                            //3.6.2 遍历文件夹找到.class
+                            getClassFile(applicationName, variant.getDirName(), newHexs, patchGenerator, file);
+                        } else {
+                            processClass(applicationName, variant.getDirName(), file, newHexs, patchGenerator);
+                        }
                     }
                 }
                 //类的md5集合 写入到文件
@@ -173,6 +179,17 @@ public class PatchPlugin implements Plugin<Project> {
 
     }
 
+    private void getClassFile(String applicationName, String dirName, Map<String, String> newHexs, PatchGenerator patchGenerator, File file1) {
+        if (file1.isDirectory()) {
+            final File[] files = file1.listFiles();
+            for (File file : files) {
+                getClassFile(applicationName, dirName, newHexs, patchGenerator, file);
+            }
+        } else if (file1.getName().endsWith(".class")) {
+            processClass(applicationName, dirName, file1, newHexs, patchGenerator);
+        }
+    }
+
     /**
      * /xxxxx/app/build/intermediates/classes/debug/com/enjoy/qzonefix/MainActivity.class
      *
@@ -185,6 +202,10 @@ public class PatchPlugin implements Plugin<Project> {
         String filePath = file.getAbsolutePath();
         //注意这里的filePath包含了目录+包名+类名，所以去掉目录
         String className = filePath.split(dirName)[1].substring(1);
+        //3.6.2
+        if (className.startsWith("classes")) {
+            className = className.substring("classes".length() + 1);
+        }
         //application或者android support我们不管
         if (className.startsWith(applicationName) || Utils.isAndroidClass(className)) {
             return;
