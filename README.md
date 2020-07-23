@@ -4,12 +4,12 @@
 
 - app
   - 测试Demo
-- buildSrc
+- anbuildSrc
   - 插件源码
-- patch-hack
+- patch-hook
   - 用于插桩进入所有工程代码的类
 - patch-lib
-  - 执行热修复的依赖库
+  - todo:执行热修复的依赖库
 
 
 ## 使用方法
