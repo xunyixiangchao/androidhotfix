@@ -9,8 +9,14 @@
 - patch-hook
   - 用于插桩进入所有工程代码的类
 - patch-lib
-  - todo:执行热修复的依赖库
+  - 执行热修复的依赖库
 
+**生成hook.jar包方式：**
+
+使用gradle build，进入build-classes-java-main目录下，使用命令 dx(需要配置全局变量里）  dx --dex --output=hook.jar com\lis\patch\
+hack\AntiLazyLoad.class
+
+**切记一定使用dx命令生成，而不是编译自己生成的jar包，因为编译的jar包里是.class文件，dx命令生成的是.dex文件**
 
 ## 使用方法
 

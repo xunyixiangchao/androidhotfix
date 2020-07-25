@@ -1,4 +1,5 @@
 rootProject.name='AndroidHotfix'
 include ':app'
-include ':anbuildsrc'
+include ':hotfixbuildsrc'
 include ':patch-hook'
+include ':hotfix-lib'
