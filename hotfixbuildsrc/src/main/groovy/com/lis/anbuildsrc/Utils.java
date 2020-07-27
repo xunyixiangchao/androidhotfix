@@ -1,6 +1,7 @@
 package com.lis.anbuildsrc;
 
 import com.android.build.gradle.internal.pipeline.TransformTask;
+import com.android.build.gradle.internal.transforms.ProGuardTransform;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.gradle.api.Task;
@@ -25,8 +26,8 @@ public class Utils {
     }
 
     public static boolean isAndroidClass(String filePath) {
-        return filePath.startsWith("android") ||
-                filePath.startsWith("androidx");
+        return filePath.startsWith("android")
+                || filePath.startsWith("androidx");
     }
 
     public static void applyMapping(Task proguardTask, File mappingFile) {
@@ -34,8 +35,8 @@ public class Utils {
         if (mappingFile.exists() && proguardTask != null) {
             //将上次混淆的mapping应用到本次
             TransformTask task = (TransformTask) proguardTask;
-//            ProGuardTransform transform = task.getTransform();
-//            transform.applyTestedMapping(mappingFile);
+            ProGuardTransform transform = (ProGuardTransform) task.getTransform();
+            transform.applyTestedMapping(mappingFile);
         }
     }
 
@@ -68,6 +69,7 @@ public class Utils {
     public static boolean isEmpty(Map map) {
         return map == null || map.isEmpty();
     }
+
     public static boolean isEmpty(String str) {
         return str == null || str.isEmpty();
     }

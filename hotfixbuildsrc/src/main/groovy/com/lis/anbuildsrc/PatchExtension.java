@@ -5,6 +5,18 @@ package com.lis.anbuildsrc;
  */
 public class PatchExtension {
 
+    public boolean isDebugOn() {
+        return debugOn;
+    }
+
+    public String getOutput() {
+        return output;
+    }
+
+    public String getApplicationName() {
+        return applicationName;
+    }
+
     boolean debugOn;
     String output;
     String applicationName;

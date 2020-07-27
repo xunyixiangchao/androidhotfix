@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.lis.patchplugin'
-path{
+patch{
     debugOn true
     applicationName 'com.lis.androidhotfix.MyApplication'
 }
@@ -24,7 +24,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
-            minifyEnabled false
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
